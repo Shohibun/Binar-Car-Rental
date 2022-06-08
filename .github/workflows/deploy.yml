@@ -1,27 +1,50 @@
-name: Production Binar Car Rental
+# name: Production Binar Car Rental
+
+# on:
+#   push:
+#     branches:
+#       - main
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Development Code
+#         uses: actions/checkout@v2
+#       - name: Use Node.js 16.x
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: 16.x
+#       - run: npm install
+#       - run: npm run test
+#       - run: npm run build --if-present
+#       - name: Deploy to Heroku
+#         uses: akhileshns/heroku-deploy@v3.12.12 #This is the action
+#         with:
+#           args: deploy --dir=build --prod
+#           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+#           heroku_app_name: 'binar-car'
+#           heroku_email: 'shohibunnajam@gmail.com'
+
+name: Deploy
 
 on:
   push:
     branches:
       - main
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: Development Code
-        uses: actions/checkout@v2
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+      - name: Install packages
+        run: npm install
+      - name: Build project
+        run: npm run-script build
+      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
-          node-version: 16.x
-      - run: npm install
-      - run: npm run test
-      - run: npm run build --if-present
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12 #This is the action
-        with:
-          args: deploy --dir=build --prod
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: 'binar-car'
-          heroku_email: 'shohibunnajam@gmail.com'
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}} #Must be unique in Heroku
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          procfile: 'web: npm start'
